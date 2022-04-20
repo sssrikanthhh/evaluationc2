@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 
 export const ShowStudents = () => {
 	const [students, setStudents] = useState([]);
-	const [sortOpt, setSortOpt] = useState({
-		val: 'first_name',
-		type: 'asc',
-	});
+	const [sortOpt, setSortOpt] = useState({});
 	const [sortData, setSortData] = useState([]);
 
 	useEffect(() => {
@@ -16,6 +13,20 @@ export const ShowStudents = () => {
 		const res = await fetch('http://localhost:8080/students');
 		const data = await res.json();
 		setStudents(data);
+		setStudents(prev => [
+			...prev.sort((a, b) => {
+				let fa = a.first_name.toLowerCase();
+				let fb = b.first_name.toLowerCase();
+
+				if (fa < fb) {
+					return -1;
+				}
+				if (fa > fb) {
+					return 1;
+				}
+				return 0;
+			}),
+		]);
 	};
 
 	const handleOpt = e => {
@@ -28,15 +39,55 @@ export const ShowStudents = () => {
 
 	const handleSort = () => {
 		const { val, type } = sortOpt;
-		setSortData(
-			students.sort((stu1, stu2) => {
-				if (type === 'asc') {
-					return stu1[val] - stu2[val];
-				} else if (type === 'desc') {
-					return stu2[val] - stu1[val];
-				}
-			})
-		);
+		if (val === 'age' && type === 'asc') {
+			setStudents(prev => [...prev.sort((a, b) => a.age - b.age)]);
+		} else if (val === 'age' && type === 'desc') {
+			setStudents(prev => [...prev.sort((a, b) => b.age - a.age)]);
+		} else if (val === 'tenth_score' && type === 'asc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => a.tenth_score - b.tenth_score),
+			]);
+		} else if (val === 'tenth_score' && type === 'desc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => b.tenth_score - a.tenth_score),
+			]);
+		} else if (val === 'twelth_score' && type === 'asc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => a.twelth_score - b.twelth_score),
+			]);
+		} else if (val === 'twelth_score' && type === 'desc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => b.twelth_score - a.twelth_score),
+			]);
+		} else if (val === 'gender' && type === 'asc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => {
+					let fa = a.gender;
+					let fb = b.gender;
+					if (fa < fb) {
+						return -1;
+					}
+					if (fa > fb) {
+						return 1;
+					}
+					return 0;
+				}),
+			]);
+		} else if (val === 'gender' && type === 'desc') {
+			setStudents(prev => [
+				...prev.sort((a, b) => {
+					let fa = a.gender;
+					let fb = b.gender;
+					if (fa < fb) {
+						return 1;
+					}
+					if (fa > fb) {
+						return -1;
+					}
+					return 0;
+				}),
+			]);
+		}
 	};
 
 	return (
@@ -71,7 +122,12 @@ export const ShowStudents = () => {
 						<option value='desc'>Descending</option>
 					</select>
 				</div>
-				<button className='sort' onClick={handleSort}>
+				<button
+					className='sort'
+					onClick={() => {
+						handleSort();
+					}}
+				>
 					sort
 				</button>
 			</div>
@@ -90,31 +146,18 @@ export const ShowStudents = () => {
 				</thead>
 				<tbody className='tbody'>
 					{/* populate all rows like below: */}
-					{sortData.length > 0
-						? sortData.map(stu => (
-								<tr key={stu.id} className='row'>
-									<td className='first_name'>{stu.first_name}</td>
-									<td className='last_name'>{stu.last_name}</td>
-									<td className='email'>{stu.email}</td>
-									<td className='gender'>{stu.gender}</td>
-									<td className='age'>{stu.age}</td>
-									<td className='tenth_score'>{stu.tenth_score}</td>
-									<td className='twelth_score'>{stu.twelth_score}</td>
-									<td className='preferred_branch'>{stu.preferred_branch}</td>
-								</tr>
-						  ))
-						: students.map(stu => (
-								<tr key={stu.id} className='row'>
-									<td className='first_name'>{stu.first_name}</td>
-									<td className='last_name'>{stu.last_name}</td>
-									<td className='email'>{stu.email}</td>
-									<td className='gender'>{stu.gender}</td>
-									<td className='age'>{stu.age}</td>
-									<td className='tenth_score'>{stu.tenth_score}</td>
-									<td className='twelth_score'>{stu.twelth_score}</td>
-									<td className='preferred_branch'>{stu.preferred_branch}</td>
-								</tr>
-						  ))}
+					{students.map(stu => (
+						<tr key={stu.id} className='row'>
+							<td className='first_name'>{stu.first_name}</td>
+							<td className='last_name'>{stu.last_name}</td>
+							<td className='email'>{stu.email}</td>
+							<td className='gender'>{stu.gender}</td>
+							<td className='age'>{stu.age}</td>
+							<td className='tenth_score'>{stu.tenth_score}</td>
+							<td className='twelth_score'>{stu.twelth_score}</td>
+							<td className='preferred_branch'>{stu.preferred_branch}</td>
+						</tr>
+					))}
 				</tbody>
 			</table>
 		</div>
